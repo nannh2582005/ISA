@@ -1,2 +1,129 @@
-\section{methods}
-Đây là phần giưuax
+% --- Nội dung --- 
+\begin{document}
+
+\section{Phân phối liên tục}
+
+%------------------------------------------------------------
+% Phân phối đều
+%------------------------------------------------------------
+\subsection{Phân phối đều (Uniform Distribution)}
+
+\subsubsection*{Hàm mật độ xác suất (PDF)}
+Phân phối đều liên tục trên đoạn $[a,b]$ có hàm mật độ:
+\[
+f(x) =
+\begin{cases}
+\frac{1}{b - a}, & \text{khi } a \leq x \leq b,\\
+0, & \text{nơi khác}.
+\end{cases}
+\]
+
+\subsubsection*{Hàm phân phối tích lũy (CDF)}
+\[
+F(x) =
+\begin{cases}
+0, & \text{khi } x < a,\\
+\frac{x - a}{b - a}, & \text{khi } a \leq x \leq b,\\
+1, & \text{khi } x > b.
+\end{cases}
+\]
+
+\subsubsection*{Biểu đồ minh họa}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{deu_pdf_cdf.png}
+    \caption{Biểu đồ hàm mật độ xác suất (PDF) và hàm tích lũy (CDF) của phân phối đều.}
+\end{figure}
+
+\subsubsection*{Các đặc trưng}
+\begin{itemize}
+    \item \textbf{Miền giá trị (Support):} $X \in [a, b]$.
+    \item \textbf{Kỳ vọng (Mean):} $\mathbb{E}[X] = \frac{a+b}{2}$
+    \item \textbf{Phương sai (Variance):} $\mathrm{Var}(X) = \frac{(b-a)^2}{12}$
+    \item \textbf{Yếu vị (Mode):} Bất kỳ giá trị nào trong $[a,b]$.
+    \item \textbf{Trung vị (Median):} $\frac{a+b}{2}$
+    \item \textbf{Tính chất :} Đối xứng quanh điểm trung bình $\frac{a+b}{2}$.
+    \item \textbf{Ví dụ dữ liệu:} Giả sử thời gian chờ thang máy (giây) tại một tầng tuân theo phân phối đều $U(0, 60)$. Một tập dữ liệu mẫu có thể là: $\{15.2, 58.1, 2.5, 33.7, 45.9, 8.8\}$.
+    \item \textbf{Bài toán ứng dụng:} Mô hình hóa sai số làm tròn; thời gian chờ đợi một sự kiện xảy ra trong một khoảng thời gian cố định, hoặc trong các thuật toán sinh số ngẫu nhiên.
+\end{itemize}
+
+%------------------------------------------------------------
+% Phân phối chuẩn
+%------------------------------------------------------------
+\subsection{Phân phối chuẩn (Normal Distribution)}
+
+\subsubsection*{Hàm mật độ xác suất (PDF)}
+\[
+f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left( -\frac{(x - \mu)^2}{2\sigma^2} \right).
+\]
+
+\subsubsection*{Hàm phân phối tích lũy (CDF)}
+\[
+F(x) = \Phi\left(\frac{x-\mu}{\sigma}\right) = \frac{1}{2}\left[1 + \text{erf}\left(\frac{x-\mu}{\sigma\sqrt{2}}\right)\right].
+\]
+
+\subsubsection*{Biểu đồ minh họa}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{chuan_pdf_cdf.png}
+    \caption{Biểu đồ PDF và CDF của phân phối chuẩn chuẩn $N(0,1)$.}
+\end{figure}
+
+\subsubsection*{Các đặc trưng}
+\begin{itemize}
+    \item \textbf{Miền giá trị (Support):} $X \in (-\infty, +\infty)$.
+    \item \textbf{Kỳ vọng (Mean):} $\mathbb{E}[X] = \mu$
+    \item \textbf{Phương sai (Variance):} $\mathrm{Var}(X) = \sigma^2$
+    \item \textbf{Yếu vị (Mode) = Trung vị (Median):} $\mu$
+    \item \textbf{Tính chất}: Đối xứng quanh $\mu$
+    \item \textbf{Ví dụ dữ liệu:} Điểm thi IQ của một nhóm người, tuân theo $N(100, 15^2)$, có thể là: $\{105, 89, 115, 101, 128, 92, 98, 110\}$.
+    \item \textbf{Bài toán ứng dụng: } Mô tả các đặc tính sinh học (chiều cao, cân nặng); sai số đo lường trong khoa học, điểm thi, lợi nhuận tài chính, mức lương, ...
+
+\end{itemize}
+
+%------------------------------------------------------------
+% Phân phối mũ
+%------------------------------------------------------------
+\subsection{Phân phối mũ (Exponential Distribution)}
+
+\subsubsection*{Hàm mật độ xác suất (PDF)}
+\[
+f(x) =
+\begin{cases}
+\lambda e^{-\lambda x}, & x \geq 0,\\
+0, & x < 0.
+\end{cases}
+\]
+
+\subsubsection*{Hàm phân phối tích lũy (CDF)}
+\[
+F(x) =
+\begin{cases}
+1 - e^{-\lambda x}, & x \geq 0,\\
+0, & x < 0.
+\end{cases}
+\]
+
+\subsubsection*{Biểu đồ minh họa}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{mu_pdf_cdf.png}
+    \caption{Biểu đồ PDF và CDF của phân phối mũ với $\lambda = 1$.}
+\end{figure}
+
+
+\subsubsection*{Các đặc trưng}
+\begin{itemize}
+    \item \textbf{Miền giá trị (Support):} $X \in [0, \infty)$.
+    \item \textbf{Kỳ vọng (Mean):} $\mathbb{E}[X] = \frac{1}{\lambda}$
+    \item \textbf{Phương sai (Variance):} $\mathrm{Var}(X) = \frac{1}{\lambda^2}$
+    \item \textbf{Yếu vị (Mode):} $0$
+    \item \textbf{Trung vị (Median):} $\frac{\ln 2}{\lambda}$
+    \item \textbf{Tính chất}: Lệch phải (right-skewed) — hàm mật độ giảm dần khi x tăng.
+    \item \textbf{Ví dụ dữ liệu:} Khoảng thời gian (phút) giữa các lượt khách hàng đến một quán cà phê: $\{0.5, 2.1, 1.3, 5.8, 0.2, 3.3, 1.9\}$.
+    \item \textbf{Bài toán ứng dụng:} Mô hình hóa tuổi thọ linh kiện, hỏng hóc sản phẩm, độ bền thiết bị; thời gian giữa các sự kiện ngẫu nhiên (khách hàng đến, cuộc gọi tới tổng đài); thời gian cho đến khi một nguyên tử phóng xạ phân rã.
+
+
+\end{itemize}
+
+\end{document}
