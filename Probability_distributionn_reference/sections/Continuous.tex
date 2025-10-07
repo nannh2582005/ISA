@@ -1,2 +1,281 @@
-\section{methods}
-Đây là phần giưuax
+\section{Phân phối Đều (Uniform Distribution)}
+
+\subsection{Định nghĩa}
+
+\textbf{Phân phối đều} (còn gọi là \textbf{phân phối hình chữ nhật}) là một phân phối xác suất có giá trị xác suất không đổi trên toàn bộ miền xác định.
+
+Phân phối này được xác định bởi hai tham số:
+\begin{itemize}
+    \item \textbf{Giá trị nhỏ nhất:} \( a \)
+    \item \textbf{Giá trị lớn nhất:} \( b \)
+\end{itemize}
+ 
+Ta ký hiệu:
+\[
+X \sim \mathrm{Uniform}(a, b), \quad -\infty < a < b < +\infty
+\]
+
+
+\subsection{Probability Mass Function - PMF}
+
+Hàm trọng lượng xác suất của phân phối Đều là:
+Giả sử biến ngẫu nhiên \( X \) có phân phối đều rời rạc trên tập \( \{x_1, x_2, \ldots, x_n\} \). Khi đó:
+
+\[
+P(X = x) = 
+\begin{cases}
+\displaystyle \frac{1}{n}, & x \in \{x_1, x_2, \ldots, x_n\}, \\[1em]
+0, & \text{ngược lại}.
+\end{cases}
+\]
+
+hay viết ngắn gọn:
+\[
+\mathrm{PMF}(x) = \frac{1}{n}, \quad \forall x \in \{x_1, x_2, \ldots, x_n\}.
+\]
+
+\subsection{Cumulative Distribution Function - CDF}
+
+Hàm xác suất tích lũy được định nghĩa là:
+\[
+F(x; a, b) =
+\begin{cases}
+0, & x < a \\
+\dfrac{x - a}{b - a}, & a \le x \le b \\
+1, & x > b
+\end{cases}
+\]
+  
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/Uniform_PMF_and_CDF.png}
+    \caption{Biểu đồ Hàm Khối lượng Xác suất (PMF) và Hàm Phân phối Tích lũy (CDF) của Phân phối Đều.}
+    \label{fig:uniform_dist}
+\end{figure}
+\subsection{Các đặc trưng thống kê}
+
+\begin{itemize}
+    \item \textbf{Kỳ vọng (Mean):}
+    \[
+    \mathbb{E}[X] = \frac{a + b}{2}
+    \]
+    \item \textbf{Phương sai (Variance):}
+    \[
+    \mathrm{Var}(X) = \frac{(b - a)^2}{12}
+    \]
+    \item \textbf{Mode:} Mọi giá trị trong $[a, b]$ đều có cùng mật độ nên không có mode duy nhất.
+    \item \textbf{Median:}
+    \[
+    \mathrm{Median}(X) = \frac{a + b}{2}
+    \]
+    \item \textbf{Miền xác định:}
+    \[
+    x \in [a, b]
+    \]
+\end{itemize}
+
+\subsection{Tính chất hình dạng (Shape)}
+
+\begin{itemize}
+    \item Phân phối đều liên tục có \textbf{dạng hình chữ nhật}, vì mật độ xác suất không đổi trong $[a, b]$.
+    \item Phân phối này \textbf{đối xứng hoàn toàn} quanh trung điểm $\frac{a + b}{2}$.
+    \item Không có độ lệch (skewness = 0) và hệ số nhọn (kurtosis excess = $-1.2$).
+\end{itemize}
+
+\subsection{Ví dụ dữ liệu và ứng dụng thực tế}
+
+\paragraph{Ứng dụng 1: Mô hình hóa sai số đo lường.}  
+Trong các bài toán kỹ thuật, nếu sai số đo nằm trong một khoảng hữu hạn và không có lý do để thiên vị bất kỳ giá trị nào, ta có thể giả định sai số tuân theo phân phối đều $U(a, b)$.
+
+\paragraph{Ứng dụng 2: Sinh số ngẫu nhiên.}  
+Hầu hết các thuật toán sinh số ngẫu nhiên trong máy tính đều bắt đầu bằng \textbf{sinh số ngẫu nhiên đều trong $[0, 1]$}, 
+sau đó biến đổi sang các phân phối khác (như Normal, Exponential) bằng các phép biến đổi ngẫu nhiên.
+
+\paragraph{Ví dụ:}  
+Giả sử thời gian chờ xe buýt đến trạm là ngẫu nhiên, nhưng luôn nằm trong khoảng 0 đến 10 phút, 
+và không có giờ cố định. Khi đó:
+\[
+X \sim \mathrm{Uniform}(0, 10)
+\]
+Xác suất bạn phải chờ không quá 3 phút là:
+\[
+P(X \le 3) = F(3; 0, 10) = \frac{3 - 0}{10 - 0} = 0.3
+\]
+tức là $30\%$.
+
+%------------------------------------
+%Normal Distribution
+%------------------------------------
+
+\section{Phân phối Chuẩn (Normal Distribution)}
+
+\subsection{Định nghĩa}
+
+Phân phối Chuẩn (hay còn gọi là phân phối Gauss) là một trong những phân phối xác suất quan trọng nhất trong thống kê, mô tả các hiện tượng ngẫu nhiên có xu hướng tập trung quanh một giá trị trung bình.  
+
+Phân phối chuẩn được đặc trưng bởi hai tham số:
+\begin{itemize}
+    \item $\mu$: giá trị kỳ vọng (mean) — thể hiện vị trí trung tâm của phân phối.
+    \item $\sigma^2$: phương sai (variance) — thể hiện độ phân tán của phân phối.
+\end{itemize}
+Ký hiệu:
+\[
+X \sim \mathcal{N}(\mu,\sigma^2), \quad -\infty < \mu < +\infty, \; \sigma > 0
+\]
+
+
+\subsection{Probability Mass Function – PMF}
+
+Hàm trọng lượng xác suất của phân phối Chuẩn là:
+\[
+f(x;\mu,\sigma) = \frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right), \quad x\in(-\infty,+\infty).
+\]
+
+Cho \( X \sim \mathcal{N}(\mu,\sigma^2) \). Hàm phân phối tích lũy (CDF) của \(X\) được định nghĩa là:
+\[
+F(x;\mu,\sigma) = P(X \le x) 
+= \int_{-\infty}^x \frac{1}{\sigma\sqrt{2\pi}}
+\exp\left[-\frac{(t-\mu)^2}{2\sigma^2}\right] dt.
+\]
+
+Tích phân này biểu diễn xác suất để biến ngẫu nhiên \(X\) nhận giá trị nhỏ hơn hoặc bằng \(x\).  
+Không có công thức nguyên hàm dạng đóng cho tích phân này, do đó việc tính toán thường được thực hiện bằng bảng phân phối chuẩn hoặc phần mềm thống kê.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/Normal_PMF_and_CDF.png}
+    \caption{Biểu đồ PMF và CDF của Phân phối Chuẩn.}
+    \label{fig:normal_dist}
+\end{figure}
+
+\subsection{Các đặc trưng thống kê}
+
+\begin{itemize}
+    \item \textbf{Kỳ vọng (Mean):} 
+    \[
+    \mathbb{E}[X] = \mu
+    \]
+    \item \textbf{Phương sai (Variance):} 
+    \[
+    \mathrm{Var}(X) = \sigma^2
+    \]
+    \item \textbf{Mode (Giá trị có xác suất cao nhất):} $\mathrm{mode} = \mu$.
+    \item \textbf{Median (Trung vị):} $\mathrm{median} = \mu$.
+    \item \textbf{Skewness (Độ lệch):} $\gamma_1 = 0$ (phân phối đối xứng).
+    \item \textbf{Excess kurtosis (Hệ số nhọn dư):} $\gamma_2 = 0$ (kurtosis chuẩn bằng 3).
+    \item \textbf{Miền xác định:} $x \in (-\infty, +\infty)$.
+    \item \textbf{Hình dạng / Độ lệch:}  
+    Phân phối chuẩn có hình dạng đặc trưng là một \textbf{đường cong hình chuông đối xứng} (\textit{bell curve}). Một số đặc điểm quan trọng:
+    \begin{itemize}
+        \item \textbf{Đối xứng:} Đường cong đối xứng hoàn hảo quanh giá trị trung bình \( \mu \). Giá trị trung bình, trung vị và mode đều trùng nhau tại \( \mu \).
+        \item \textbf{Đỉnh (Mode):} Nằm tại \( x = \mu \) — đây cũng là điểm cực đại của hàm mật độ xác suất.
+        \item \textbf{Độ lệch (Skewness):} Bằng 0, thể hiện tính đối xứng hoàn hảo của phân phối chuẩn.
+        \item \textbf{Độ nhọn (Kurtosis):} Kurtosis chuẩn bằng 3 (excess kurtosis bằng 0), cho thấy mức độ tập trung và độ dày đuôi ở mức trung bình so với các phân phối khác.
+        \item \textbf{Đuôi:} Hai đuôi trải dài về hai phía nhưng không bao giờ chạm trục hoành — đặc trưng cho đuôi vô hạn đối xứng.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Mối liên hệ với phân phối chuẩn}
+
+Tổng của nhiều biến ngẫu nhiên độc lập có phân phối đều sẽ xấp xỉ phân phối chuẩn chuẩn hoá khi số lượng biến tiến tới vô hạn.  
+Giả sử $X_1, X_2, \ldots, X_n \sim \mathrm{Uniform}(0,1)$ độc lập, có $\mu = \frac{1}{2}$ và $\sigma^2 = \frac{1}{12}$, khi đó:
+\[
+Z_n = \frac{\sum_{i=1}^n X_i - n\mu}{\sqrt{n\sigma^2}} \xrightarrow{d} \mathcal{N}(0,1) \quad \text{khi } n \to \infty.
+\]
+
+\subsection*{Ví dụ dữ liệu và ứng dụng thực tế }
+
+\paragraph{Ứng dụng 1: Điểm thi, chiều cao, chỉ số IQ.}  
+Nhiều đặc tính sinh học và xã hội (ví dụ: chiều cao của người trưởng thành trong một quần thể, điểm IQ, điểm thi chuẩn hoá) được mô tả rất tốt bởi phân phối chuẩn.  
+Lý do là vì các đặc tính này chịu ảnh hưởng của nhiều yếu tố ngẫu nhiên nhỏ, độc lập (yếu tố di truyền, môi trường, rèn luyện, ...), và theo \textbf{Định lý giới hạn trung tâm}, tổng hợp của các yếu tố này sẽ xấp xỉ phân phối chuẩn.
+
+Ví dụ, điểm IQ trong dân số thường được mô hình hoá theo phân phối:
+\[
+X \sim \mathcal{N}(100,\;15^2)
+\]
+Xác suất để một người có IQ lớn hơn 130 là:
+\[
+P(X > 130) = 1 - \Phi\Bigl(\frac{130 - 100}{15}\Bigr) 
+= 1 - \Phi(2) \approx 0.0228,
+\]
+tức khoảng 2.28\% dân số.
+
+\paragraph{Ứng dụng 2: Kiểm định giả thuyết và khoảng tin cậy.}  
+Phân phối chuẩn là nền tảng cho nhiều phương pháp thống kê suy luận, đặc biệt là khi làm việc với mẫu lớn hoặc phương sai tổng thể đã biết.  
+
+
+
+\section{Phân phối Mũ}
+
+\subsection{Định nghĩa}
+
+Phân phối mũ mô tả thời gian giữa các sự kiện liên tiếp trong một quá trình Poisson với tốc độ (rate) không đổi.  
+Nó là phiên bản liên tục tương ứng của phân phối hình học.  
+
+Ta ký hiệu:
+\[
+X \sim \mathrm{Exponential}(\lambda), \quad \lambda>0.
+\]
+
+\subsection{Probability Density Function -- PDF}
+
+Hàm mật độ xác suất của phân phối mũ được cho bởi:
+\[
+f(x;\lambda) = 
+\begin{cases}
+\lambda e^{-\lambda x}, & x \ge 0, \\
+0, & x < 0.
+\end{cases}
+\]
+
+\subsection{Cumulative Distribution Function - CDF}
+
+Hàm xác suất tích lũy được định nghĩa là:
+\[
+F(k; r, p) = P(X \leq k) = \sum_{i = 0}^{k} \binom{i + r - 1}{i} p^r (1 - p)^{i}
+\]
+Giống như phân phối Nhị thức, CDF của NBD có thể liên hệ với hàm Beta không đều:
+\[
+F(k; r, p) = I_{p}(r, k + 1)
+\]
+
+\begin{figure}[h!]
+ \centering
+ \includegraphics[width=0.8\textwidth]{images/Exp_PDF_and_CDF.png}
+\caption{Biểu đồ Hàm Khối lượng Xác suất (PDF) và Hàm Phân phối Tích lũy (CDF) của Phân phối Nhị thức Âm. Phân phối này mô tả số lần thất bại trước khi đạt $r$ thành công cố định.}
+\label{fig:nbinomial_dist}
+\end{figure}
+
+\subsection{Các đặc trưng thống kê}
+
+\begin{itemize}
+    \item \textbf{Giá trị kỳ vọng (Mean):}
+    \[
+    \mathbb{E}[X] = \frac{1}{\lambda}
+    \]
+    \item \textbf{Phương sai (Variance):}
+    \[
+    \mathrm{Var}(X) = \frac{1}{\lambda^2}
+    \]
+    \item \textbf{Mode:} $0$
+    \item \textbf{Median:}
+    \[
+    \mathrm{Median}(X) = \frac{\ln 2}{\lambda}
+    \]
+    \item \textbf{Miền xác định:} $x \in [0, +\infty)$
+\end{itemize}
+
+\subsection{Mối liên hệ với các phân phối khác}
+
+\begin{itemize}
+    \item \textbf{Liên hệ với Poisson:} Nếu số sự kiện trong khoảng thời gian tuân theo $\mathrm{Poisson}(\lambda)$, thì \textbf{khoảng thời gian giữa các sự kiện liên tiếp} tuân theo $\mathrm{Exponential}(\lambda)$.
+    \item \textbf{Liên hệ với Hình học:} Exponential là phiên bản liên tục của Geometric.
+    \item \textbf{Phân phối Gamma:} Exponential là trường hợp đặc biệt của Gamma với $k = 1$.
+\end{itemize}
+
+\subsection{Ví dụ dữ liệu và ứng dụng thực tế}
+\paragraph{Ứng dụng 1: Độ tin cậy sản phẩm và thời gian hỏng hóc.}  
+Phân phối mũ thường được sử dụng để mô hình hóa thời gian giữa các hỏng hóc của linh kiện, hoặc thời gian sống của sản phẩm khi xác suất hỏng là hằng số theo thời gian.
+
+\paragraph{Ứng dụng 2: Quản lý lưu lượng và hàng đợi.}  
+Trong các hệ thống xếp hàng (ví dụ: khách đến cửa hàng, gói tin đến máy chủ), thời gian giữa các lượt đến thường được giả định là phân phối mũ.
