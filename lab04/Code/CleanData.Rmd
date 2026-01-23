@@ -4,6 +4,24 @@ author: Ngọc Anh
 date: "`r Sys.Date()`"
 output: html_document
 ---
+# note to thành viên (ĐỌC PHẦN NÀY PLZ)
+Phần 7 anh đang trao chuốt nó lại xíu (nhưng mà về parem như vậy ann nghĩ nó ổn hehe)
+Phần 8 thì chắc là sau ngày 19 anh mới làm được 
+Phần 8 thì nó sẽ là kiểu như sau:
+Ứng với mỗi "Câu hỏi"
+1. Bước 1: Vẽ heatmap để kiểm tra đa cộng tuyến (cái này chắc skip do làm ở phân 7)
+2. Bước 2: Stacked bar chart với trục tung là tỷ lệ  bị bệnh tiểu đường (cho ta một cái intuitions để đặt giả thiết)
+3. Bước 3: Thực hiện kiểm định (MaxT/minT và Holm-Bonferoni), Đưa ra kết luận
+Phần 9: Modeling (bỏ vô Logistic regression -> odd Ratio -> diễn giải) 
+- Cái này thì tùy "Câu hỏi" mà mình xem coi có modelling nó hay không (modeling ở đâu chủ yếu là tìm ra được các mối liên hệ giữa các tác nhân so với bệnh tiểu đường, ví dụ như logistic regression thì có cái odd Ratio, còn cái Decision tree thì nó hay đi kèm cái features importance. Chủ yếu khúc này là đươc ra được phân diễn giải cho căn bệnh tiểu đường dựa trên các tác nhân á
+
+Còn đây là list các "Câu hỏi" mà bộ dữ liệu này mình nghĩ nó cần được sáng tỏ: 
+1. Lối sống có ảnh hưởng như thế nào đến bệnh tiểu đường (cái này thì multiple testing 5 cặp giả thiết ứng với 5 cái features trong lớp lifestyle đã chia ở dưới)
+2. Các bệnh nền (Cholesterol cao, Đột quỵ, Béo phì...) có ảnh hưởng tới tiểu đường hay không (Kiểm định thống kê)
+3. Tuổi tác và giới tính có ảnh hưởng đến bệnh tiểu dường hay không
+4. trong các chỉ số sức khỏe, đâu sẽ là nhân tổ quan trọng nhất giúp dự đoán được bệnh tiểu đường <modeling>
+
+
 
 ## 2. Objective
 The objective of this analysis is to explore the relationships between lifestyle factors, demographic characteristics, and health indicators, with a particular focus on diabetes status. Specifically, the study aims to understand the overall structure and key characteristics of the dataset, ensure data reliability through appropriate cleaning procedures, and identify meaningful patterns and trends associated with diabetes. The findings are intended to provide insights into how lifestyle and demographic factors relate to health outcomes. We plan to use another data for methods
@@ -411,8 +429,8 @@ Taken together, the density plot, boxplot, and categorical distribution of MentH
   - Education
   - Income
   - AnyHealthcare
-  - NoDocbcCos
-  - CholCheckt
+  - NoDocbcCost
+  - CholCheck
 
 - **Behavioral factors comprised:**
   - Smoker
@@ -432,6 +450,19 @@ Taken together, the density plot, boxplot, and categorical distribution of MentH
   - MentHlth
   - PhysHlth
   - DiffWalk
+```{r}
+demosocial_vars <- c("Sex", "Age", "Education", "Income","AnyHealthcare", "CholCheck", "NoDocbcCost")
+
+behavioral_vars <- c(
+  "Smoker", "PhysActivity", "Fruits", "Veggies", "HvyAlcoholConsump"
+)
+
+health_vars <- c(
+  "Diabetes_012", "HighBP", "HighChol",  "BMI",
+  "Stroke", "HeartDiseaseorAttack", "GenHlth", "MentHlth",
+  "PhysHlth", "DiffWalk"
+)
+```
 
 ### 7.2 Density/ distribution plot
 #### 7.2.1 Demographic and Social characteristics indicators
@@ -518,71 +549,36 @@ p_age <- data %>%
 print(p_age)
 ```
 
+
 ```{r}
-# Function definition
-draw_mono_charts <- function(data, var_vector, title1, title2) {
-  
-  # Reshape data to long format
-  plot_data <- data %>%
-    select(all_of(var_vector)) %>%
-    pivot_longer(cols = everything(), names_to = "Variable", values_to = "Value") %>%
-    mutate(Value = as.factor(Value))
-  
-  # --- Chart 1: Amount (Side-by-side) ---
-  p1 <- ggplot(plot_data, aes(x = Variable, fill = Value)) +
-    geom_bar(position = "dodge") +
-    geom_text(stat = "count", aes(label = ..count..), 
-              position = position_dodge(width = 0.9), vjust = -0.5) +
-    scale_fill_manual(
-      values = c("0" = "forestgreen", "1" = "firebrick"),
-      name = "Value"
-    ) +
-    labs(title = title1, x = "Variable", y = "Count") +
-    theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-  
-  print(p1) # Show first plot
-  
-  # --- Chart 2: Fraction (Stacked %) ---
-  # Calculate percentages
-  plot_data_pct <- plot_data %>%
-    count(Variable, Value) %>%
-    group_by(Variable) %>%
-    mutate(Percent = n / sum(n))
-  
-  p2 <- ggplot(plot_data_pct, aes(x = Variable, y = Percent, fill = Value)) +
-    geom_col(position = "fill") +
-    geom_text(aes(label = scales::percent(Percent, accuracy = 1)), 
-              position = position_fill(vjust = 0.5), color = "white") +
-    scale_y_continuous(labels = scales::percent) +
-    scale_fill_manual(
-      values = c("0" = "forestgreen", "1" = "firebrick"),
-      name = "Value"
-    ) +
-    labs(title = title2, x = "Variable", y = "Percentage") +
-    theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-  
-  print(p2) # Show second plot
-}
+# Reshape data to long format for single plot
+access_to_healthServices <- c("AnyHealthcare","NoDocbcCost","CholCheck")
+
+plot_data <- data %>%
+  select(all_of(access_to_healthServices)) %>%
+  pivot_longer(cols = everything(), names_to = "Variable", values_to = "Value") %>%
+  mutate(Value = as.factor(Value))
+
+# Draw stacked bar chart
+ggplot(plot_data, aes(x = Variable, fill = Value)) +
+  geom_bar(position = "stack") +
+  scale_fill_manual(
+    values = c("0" = "forestgreen", "1" = "firebrick"), # Green for 0, Brick Red for 1
+    name = "Value"
+  ) +
+  labs(
+    title = "accessment of Health fractions",
+    x = "Variable",
+    y = "Count"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Rotate labels 45 degrees
 
 ```
 
-```{r}
-# 1. Define the vector
- access_to_healthServices <- c("AnyHealthcare","NoDocbcCost","CholCheck")
 
-# 2. Call the function
-draw_mono_charts(
-  data = data, 
-  var_vector = access_to_healthServices, 
-  title1 = "Amount of each class of Accessment of Health Service Variable", 
-  title2 = "Fraction of each class of Accessment of Health Service Variable"
-)
 
-```
-
-As the figure suggested, more than 24000/25000 surveyed people have no difficulty in healthcare accessment.
+<NHẬN XÉT>
 
 #### 7.2.2 Health Indicators
 
@@ -626,23 +622,32 @@ data %>%
 
 
 ```{r}
-health_vars <- c( "HighBP", "HighChol", 
+health_vars <- c( "HighBP", "HighChol", "CholCheck", 
   "Stroke", "HeartDiseaseorAttack", "DiffWalk"
 )
-# 1. Define the vector
- access_to_healthServices <- c("AnyHealthcare","NoDocbcCost","CholCheck")
 
-# 2. Call the function
-draw_mono_charts(
-  data = data, 
-  var_vector = health_vars, 
-  title1 = "Amount of each class of Indicators of Health Service Variable", 
-  title2 = "Fraction of each class of Indicators of Health Service Variable"
-)
+# Reshape data and categorize strictly as 0 vs Rest
+# Reshape data to long format for single plot
+plot_data <- data %>%
+  select(all_of(health_vars)) %>%
+  pivot_longer(cols = everything(), names_to = "Variable", values_to = "Value") %>%
+  mutate(Value = as.factor(Value))
 
+# Draw stacked bar chart
+ggplot(plot_data, aes(x = Variable, fill = Value)) +
+  geom_bar(position = "stack") +
+  scale_fill_manual(
+    values = c("0" = "forestgreen", "1" = "firebrick"), # Green for 0, Brick Red for 1
+    name = "Value"
+  ) +
+  labs(
+    title = "Fraction of each class of Health Variables",
+    x = "Variable",
+    y = "Count"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Rotate labels 45 degrees
 ```
-
-
 #### 7.2.3 Target variable: Diabetes_012
 
 Biến Diabetes_012 là một biến phân loại với ba giá trị 0(không bị tiểu đường), 1(tiểu đường loại 1) và 2(tiểu đường loại 2). Đầu tiên ta xem phân phối của từng lớp
@@ -708,55 +713,30 @@ Ta có tổng cộng 5 biến thể hiện thói quen/ lối sống như sau:
 2.Các Biến thể hiện thói quen/ lối sống tiêu cực bao gồm : Smoker,HvyAlcoholConsum.
 
 ```{r}
-# Define behavioral variables
 behavioral_vars <- c("Smoker", "PhysActivity", "Fruits", "Veggies", "HvyAlcoholConsump")
 
-# Reshape data to long format
+# Reshape data to long format for single plot
 plot_data <- data %>%
   select(all_of(behavioral_vars)) %>%
   pivot_longer(cols = everything(), names_to = "Variable", values_to = "Value") %>%
   mutate(Value = as.factor(Value))
 
-# --- Chart 1: Amount of each class (Side-by-side with labels) ---
+# Draw stacked bar chart
 ggplot(plot_data, aes(x = Variable, fill = Value)) +
-  geom_bar(position = "dodge") + # Side-by-side bars
-  geom_text(stat = "count", aes(label = ..count..), 
-            position = position_dodge(width = 0.9), vjust = -0.5) + # Add count labels
+  geom_bar(position = "stack") +
   scale_fill_manual(
-    values = c("0" = "forestgreen", "1" = "firebrick"),
-    name = "Value"
-  ) +
-  labs(
-    title = "Amount of each class of Behavioral Variables",
-    x = "Variable",
-    y = "Count"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-# --- Chart 2: Fraction of each class (100% Stacked Bar) ---
-# Calculate percentages first
-plot_data_pct <- plot_data %>%
-  count(Variable, Value) %>%
-  group_by(Variable) %>%
-  mutate(Percent = n / sum(n))
-
-ggplot(plot_data_pct, aes(x = Variable, y = Percent, fill = Value)) +
-  geom_col(position = "fill") + # Stacked proportional bar
-  geom_text(aes(label = scales::percent(Percent, accuracy = 1)), 
-            position = position_fill(vjust = 0.5), color = "white") + # Add % labels
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(
-    values = c("0" = "forestgreen", "1" = "firebrick"),
+    values = c("0" = "forestgreen", "1" = "firebrick"), # Green for 0, Brick Red for 1
     name = "Value"
   ) +
   labs(
     title = "Fraction of each class of Behavioral Variables",
     x = "Variable",
-    y = "Percentage"
+    y = "Count"
   ) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Rotate labels 45 degrees
+
+
 
 ```
 cmt out
@@ -791,23 +771,13 @@ data %>%
 ```
 
 ```{r}
-# Prepare data with percentages for better labels
-pie_data <- data %>%
-  count(Sex, Diabetes_012) %>%       # Count occurrences
-  group_by(Sex) %>%
-  mutate(Percent = n / sum(n))       # Calculate percentage per Sex
-
-# Draw Pie Chart
-ggplot(pie_data, aes(x = "", y = Percent, fill = factor(Diabetes_012))) +
-  geom_col(color = "white") +        # Use geom_col for pre-calculated values
-  coord_polar("y", start = 0) +      # Convert bar to pie
-  facet_wrap(~Sex, strip.position = "bottom",
-             labeller = as_labeller(c("0" = "Female", "1" = "Male"))) +                 # Create separate pie for each Sex
-  theme_void() +                     # Remove axes and background
-  geom_text(aes(label = scales::percent(Percent, accuracy = 1)),
-            position = position_stack(vjust = 0.5)) + # Add labels in center of slices
+ggplot(data, aes(x = factor(Sex), fill = factor(Diabetes_012))) +
+  geom_bar(position = "fill") +
+  theme_bw() +
   labs(
     title = "Diabetes Status by Sex",
+    x = "Sex",
+    y = "Proportion",
     fill = "Diabetes Status"
   )
 ```
@@ -819,7 +789,6 @@ Overall, the distribution of diabetes status is broadly similar across sexes, wi
 Trẻ, Thanh niên, Trung Niên, người zà
 
 ```{r}
-
 age_table <- data %>%
   mutate(
     AgeGroup = factor(
@@ -865,58 +834,6 @@ Phần này thì tìm hiểu về tương quan giữa
 Và các biến còn lại của nó, ta cũng sẽ vẽ heatmap cho nó (các biến phần nhân khaair & xã hội + diabetes ?)
 
 
-**Ăn uống lành mạnh và bệnh tiểu đường**
-
-First, ta thực hiện feature engineering
-
-```{r}
-
-data <- data %>%
-  mutate(is_vegfruit = as.factor(Fruits * Veggies))
-
-draw_mono_charts(
-  data = data, 
-  var_vector = c("is_vegfruit"), 
-  title1 = "Amount of people who consume at least 1 green product a days ", 
-  title2 = "Fraction of people who consume at least 1 green product a days"
-)
-
-```
-```{r}
-head(data$is_vegfruit)
-```
-
-```{r}
-
-is_vegfruit_table <- data %>%
-  group_by(is_vegfruit, Diabetes_012) %>%
-  summarise(n = n(), .groups = "drop") %>%
-  group_by(is_vegfruit) %>%
-  mutate(Percentage = round(n / sum(n) * 100, 2)) %>%
-  ungroup()
-
-ggplot(is_vegfruit_table,
-       aes(x = is_vegfruit, y = Percentage, fill = factor(Diabetes_012))) +
-  geom_col(position = "fill") +
-  facet_wrap(~is_vegfruit, strip.position = "bottom",
-             labeller = as_labeller(c("0" = "Non - Veggetable consumer", "1" = "Veggetable consumer"))) +
-  theme_bw() +
-  labs(
-    title = "Diabetes Status for those who eat green",
-    x = "Class type ",
-    y = "Proportion",
-    fill = "Diabetes Status"
-  )
-```
-
-**Thói qe**
-
-Overall, the prevalence of diabetes increases with higher BMI categories. Underweight and normal-weight groups are largely non-diabetic, while overweight and especially obese individuals show substantially higher proportions of diabetes and prediabetes, indicating a strong positive association between BMI and diabetes status.
-
-
-#### 7.3.3 Chỉ số sức khỏe và bệnh Tiểu đường
-
-
 **Diabetes by BMI**
 
 ```{r}
@@ -940,6 +857,7 @@ bmi_table <- data %>%
 
 bmi_table
 ```
+
 ```{r}
 ggplot(bmi_table, aes(x = BMI_Group, y = n, fill = factor(Diabetes_012))) +
   geom_col(position = "fill") +
@@ -951,6 +869,20 @@ ggplot(bmi_table, aes(x = BMI_Group, y = n, fill = factor(Diabetes_012))) +
     fill = "Diabetes Status"
   )
 ```
+
+Overall, the prevalence of diabetes increases with higher BMI categories. Underweight and normal-weight groups are largely non-diabetic, while overweight and especially obese individuals show substantially higher proportions of diabetes and prediabetes, indicating a strong positive association between BMI and diabetes status.
+
+
+#### 7.3.3 Tương quan giữa các Chỉ số sức khỏe và bệnh Tiểu đường
+
+Phần này thì tìm hiểu về tương quan giữa 
+* Hút thuốc và rượu so với bệnh tiểu đường
+* Ăn trái cây & ăn chay so với tiểu đường
+Và các biến còn lại của nó, ta cũng sẽ vẽ heatmap cho nó (các biến phần nhân khaair & xã hội + diabetes ?)
+
+==> nổi bậc được sống tệ thì hay bị bệnh khi so với sống tố (Nếu cái plot nó đưa ra cái hint như vậy hihi)
+PHÂN NÀY ĐANG LÀM HUHU (MÀ CHẮC SAU 19 ANH MỚI LÀM TIẾP ĐƯỢC DO ANH ĐI THI RẦU)
+
 #### 7.3.4 Phân này chủ yếu là coi coi các thói quen lối sống có ảnh hương như nào tớicác chỉ số sức khỏe
 
 PHÂN NÀY ĐANG LÀM HUHU (MÀ CHẮC SAU 19 ANH MỚI LÀM TIẾP ĐƯỢC DO ANH ĐI THI RẦU)
